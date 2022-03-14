@@ -28,6 +28,7 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -119,7 +120,7 @@ class RemindersActivityTest :
     }
 
     @Test
-    fun unsuffientDataTest() = runBlocking{
+    fun unsuffientDataTest() {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         Espresso.onView(withId(R.id.addReminderFAB)).perform(click())

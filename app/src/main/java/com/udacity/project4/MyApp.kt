@@ -35,7 +35,11 @@ class MyApp : Application() {
                     get() as ReminderDataSource
                 )
             }
-            single { RemindersLocalRepository(get()) as ReminderDataSource }
+            single { RemindersLocalRepository(get()) }
+            // ReminderDataSource
+            single<ReminderDataSource> {
+                get<RemindersLocalRepository>()
+            }
             single { LocalDB.createRemindersDao(this@MyApp) }
         }
 
@@ -43,5 +47,6 @@ class MyApp : Application() {
             androidContext(this@MyApp)
             modules(listOf(myModule))
         }
+
     }
 }
