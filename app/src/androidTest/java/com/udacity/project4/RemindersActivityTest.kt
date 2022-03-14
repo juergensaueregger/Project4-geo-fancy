@@ -105,7 +105,7 @@ class RemindersActivityTest :
     }
 
     @Test
-    fun setReminderTest() {
+    fun setReminderTest() = runBlocking {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
         Espresso.onView(withId(R.id.addReminderFAB)).perform(click())
