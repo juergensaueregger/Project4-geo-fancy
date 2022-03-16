@@ -8,8 +8,7 @@ import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -55,5 +54,13 @@ class RemindersListViewModelTest {
         remindersListViewModel.showLoading.value?.let { assertTrue(it) }
         mainCoroutineRule.resumeDispatcher()
         remindersListViewModel.showLoading.value?.let { assertFalse(it) }
+    }
+
+    @Test
+    fun testwithError() = runBlockingTest {
+        fakeDataSource.setShouldReturnError(true)
+        fakeDataSource.saveReminder(dataItem)
+        remindersListViewModel.showLoading.value?.let { assertEquals("element not found", it) }
+
     }
 }

@@ -5,12 +5,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -35,7 +36,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
-
+    private lateinit var locationCallback: LocationCallback
 
 
 
@@ -109,13 +110,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun enableLocation() {
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission( requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(
                 arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -129,13 +127,27 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     private fun zoomOnOwnPosition() {
         p0.isMyLocationEnabled = true
-        val location = FusedLocationProviderClient(requireContext()).lastLocation
-        location.addOnSuccessListener(requireActivity()) {
-            val latLng = LatLng(it.latitude, it.longitude)
-            p0.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(latLng, 15F)
-            )
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    p0.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(latLng, 15F)
+                    )
+                }
+            }
         }
+        with(LocationRequest()) {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 0
+            fastestInterval = 0
+            val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+            fusedLocationProviderClient.requestLocationUpdates(this, locationCallback, Looper.myLooper())
+        }
+
+
+
     }
 
     private fun setLongClickPin(p0: GoogleMap) {

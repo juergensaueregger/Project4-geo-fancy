@@ -10,6 +10,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -109,17 +110,35 @@ class RemindersActivityTest :
     }
 
     @Test
+    fun TitleSnackBarTest(){
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        Espresso.onView(withId(R.id.addReminderFAB)).perform(click())
+        Espresso.onView(withId(R.id.saveReminder)).perform(click())
+        Espresso.onView(withText("Please enter title")).check(matches(isDisplayed()))
+        activityScenario.close()
+    }
+
+    @Test
     fun setReminderTest() = runBlocking {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
+        lateinit var activity: RemindersActivity
+        activityScenario.onActivity {
+            activity = it
+        }
         Espresso.onView(withId(R.id.addReminderFAB)).perform(click())
         Espresso.onView(withId(R.id.reminderTitle)).perform(ViewActions.replaceText("New Location"))
         Espresso.onView(withId(R.id.reminderDescription)).perform(ViewActions.replaceText("New Location Description"))
         Espresso.onView(withId(R.id.selectLocation)).perform(click())
-        Espresso.onView(withId(R.id.map)).perform(click())
+        Espresso.onView(withId(R.id.map)).perform(longClick())
         Espresso.onView(withId(R.id.select_bt)).perform(click())
         Espresso.onView(withId(R.id.saveReminder)).perform(click())
         Espresso.onView(withText("New Location")).check(matches(isDisplayed()))
+        Espresso.onView(withText(R.string.reminder_saved))
+            .inRoot(withDecorView(not(CoreMatchers.`is`(activity.window.decorView))))
+            .check(matches(isDisplayed()))
+
         activityScenario.close()
     }
 
