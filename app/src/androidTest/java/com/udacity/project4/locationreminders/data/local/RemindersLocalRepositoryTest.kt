@@ -1,5 +1,6 @@
 package com.udacity.project4.locationreminders.data.local
 
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -10,6 +11,7 @@ import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.*
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.koin.test.AutoCloseKoinTest
@@ -60,7 +62,7 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
 
     @Test
     fun dataNotFoundTest() = runBlocking {
-        val result = repo.getReminder("4711")
-        assertTrue(result is Result.Error)
+        val result = repo.getReminder("4711") as Result.Error
+        assertEquals("Reminder not found!",result.message)
     }
 }

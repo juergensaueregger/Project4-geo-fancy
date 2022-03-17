@@ -60,7 +60,7 @@ class RemindersListViewModelTest {
     fun testwithError() = runBlockingTest {
         fakeDataSource.setShouldReturnError(true)
         fakeDataSource.saveReminder(dataItem)
-        remindersListViewModel.showLoading.value?.let { assertEquals("element not found", it) }
-
+        val result = remindersListViewModel.showSnackBar.value
+        assertEquals("element not found",result )
     }
 }
