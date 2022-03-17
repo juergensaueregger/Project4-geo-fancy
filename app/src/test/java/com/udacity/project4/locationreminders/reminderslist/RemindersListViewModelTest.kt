@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
@@ -57,10 +58,10 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun testwithError() = runBlockingTest {
+    fun testWithError() = runBlockingTest {
         fakeDataSource.setShouldReturnError(true)
         fakeDataSource.saveReminder(dataItem)
-        val result = remindersListViewModel.showSnackBar.value
-        assertEquals("element not found",result )
+        val result = fakeDataSource.getReminder("23332") as Result.Error
+        assertEquals("element not found",result.message )
     }
 }
