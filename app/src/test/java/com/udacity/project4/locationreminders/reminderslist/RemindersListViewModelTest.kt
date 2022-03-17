@@ -1,5 +1,6 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -61,7 +62,8 @@ class RemindersListViewModelTest {
     fun testWithError() = runBlockingTest {
         fakeDataSource.setShouldReturnError(true)
         fakeDataSource.saveReminder(dataItem)
+        remindersListViewModel.loadReminders()
         val result = fakeDataSource.getReminder("23332") as Result.Error
-        assertEquals("element not found",result.message )
+        assertEquals("no reminders",remindersListViewModel.showSnackBar.value )
     }
 }
